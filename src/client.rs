@@ -1,5 +1,5 @@
 use hello::say_client::SayClient;
-use hello::sayRequest;
+use hello::SayRequest;
 
 mod hello;
 
