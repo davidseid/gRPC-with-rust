@@ -44,7 +44,7 @@ impl Say for MySay {
     }
 
     // our rpc to receive a stream
-    async fn receive_stream(&self, request: Request<tonic::Streaming<SayRequest>>) -> Result<Response<SayResonse>, Status> {
+    async fn receive_stream(&self, request: Request<tonic::Streaming<SayRequest>>) -> Result<Response<SayResponse>, Status> {
         // converting request into stream
         let mut stream = request.into_inner();
         let mut message = String::from("");
@@ -68,7 +68,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // adding our service to our server
     Server::builder()
         .add_service(SayServer::new(say))
-        .serve(addr)tes());
+        .serve(addr)
         .await?;
     Ok(())
 }
