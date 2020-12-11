@@ -42,6 +42,20 @@ impl Say for MySay {
             message:format!("hello {}", request.get_ref().name),
         }))
     }
+
+    // our rpc to receive a stream
+    async fn receive_stream(&self, request: Request<tonic::Streaming<SayRequest>>) -> Result<Response<SayResonse>, Status> {
+        // converting request into stream
+        let mut stream = request.into_inner();
+        let mut message = String::from("");
+
+        // listening on stream
+        while let Some(req) = stream.message().await? {
+            message.push_str(&format!("Hello {}\n", req.name))
+        }
+        // returning response
+        Ok(Response::new(SayResponse { message }))
+    }
 }
 
 #[tokio::main]
@@ -54,7 +68,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // adding our service to our server
     Server::builder()
         .add_service(SayServer::new(say))
-        .serve(addr)
+        .serve(addr)tes());
         .await?;
     Ok(())
 }
