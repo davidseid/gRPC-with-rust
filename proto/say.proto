@@ -11,6 +11,7 @@ service Say {
 
     // we specify that we return a stream
     rpc SendStream(SayRequest) returns (stream SayResponse);
+    rpc ReceiveStream(stream SayRequest) returns (SayResponse);
 }
 
 // argument
