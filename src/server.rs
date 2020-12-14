@@ -12,7 +12,31 @@ pub struct MySay {}
 #[tonic::async_trait]
 impl Say for MySay {
     // specify the output of rpc call
-    type SendStreamStream=mpsc::Receiver<Result<SayResponse,Status>>;
+    type BidirectionalStream = mpsc::Receiver<Result<SayResponse,Status>>;
+    type SendStreamStream = mpsc::Receiver<Result<SayResponse,Status>>;
+
+
+    async fn bidirectional(&self, request: Request<tonic::Streaming<SayRequest>>) -> Result<Response<Self::BidirectionalStream>, Status> {
+        // converting request into stream
+        let mut streamer = request.into_inner();
+
+        // creating queue
+        let (mut tx, rx)= mpsc::channel(4);
+
+        tokio::spawn(async move {
+            // listening on request stream
+            while let Some(req) = streamer.message().await.unwrap() {
+                // sending data as soon as it is available
+                tx.send(Ok(SayResponse {
+                    message: format!("hello {}", req.name),
+                }))
+                .await;
+            }
+        });
+
+        // return stream as receiver
+        Ok(Response::new(rx))
+    }
 
     // implementation of rpc call
     async fn send_stream(&self, _request: Request<SayRequest>) -> Result<Response<Self::SendStreamStream>, Status> {
