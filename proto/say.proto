@@ -4,7 +4,7 @@ syntax = "proto3";
 // package name for the buffer
 package hello;
 
-// serviche which can be executed
+// service which can be executed
 service Say {
     // function whichcan be called
     rpc Send (SayRequest) returns (SayResponse);
@@ -12,6 +12,9 @@ service Say {
     // we specify that we return a stream
     rpc SendStream(SayRequest) returns (stream SayResponse);
     rpc ReceiveStream(stream SayRequest) returns (SayResponse);
+    
+    // takes and returns a stream
+    rpc Bidirectional(stream SayRequest) returns (stream SayResponse);
 }
 
 // argument
