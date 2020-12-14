@@ -27,15 +27,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         },
     ]));
   
-    // // now the response is stream
-    // let mut response = client.send_stream(request).await?.into_inner();
+    // calling rpc
+    let mut response = client.bidirectional(request).await?.into_inner();
 
-    // // listening to the stream
-    // while let Some(res) = response.message().await? {
-    //     println!("NOTE = {:?}", res);
-    // }
+    // listening on the repsonse stream
+    while let Some(res) = response.message().await? {
+        println!("NOTE = {:?}", res);
+    }
 
-    let response = client.receive_stream(request).await?.into_inner();
-    println!("RESPONSE=\n{}", response.message);
+    // let response = client.receive_stream(request).await?.into_inner();
+    // println!("RESPONSE=\n{}", response.message);
     Ok(())
 }
